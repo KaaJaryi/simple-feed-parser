@@ -26,13 +26,13 @@ const getMetadatas = ( xml, feedType ) => {
     const channelNode = xml.getElementsByTagName( channelTag )[0]
 
     metadatas.title = getElementTextContent( channelNode, 'title' )
-    //    metadatas.links = getLinks( channelNode )
+    metadatas.links = getLinks( channelNode )
     metadatas.description = getElementTextContent( channelNode, 'description' )
     metadatas.language = getElementTextContent( channelNode, 'language' )
     metadatas.copyright = getElementTextContent( channelNode, 'copyright' )
     metadatas.authors = getAuthors( channelNode )
-    metadatas.lastUpdated = getElementTextContent( channelNode, 'lastUpdated' )
-    metadatas.lastPublished = getElementTextContent( channelNode, 'lastPublished' )
+    metadatas.lastUpdated = getElementTextContent( channelNode, 'updated' )
+    metadatas.lastPublished = getElementTextContent( channelNode, 'published' )
     //metadatas.categories = getChannelCategories( channelNode )
     //metadatas.image = getChannelImage( channelNode )
 
@@ -41,58 +41,48 @@ const getMetadatas = ( xml, feedType ) => {
 
 const getElements = ( node, tagName ) => node.getElementsByTagName( tagName ) || []
 
-const getChildElements = ( node, tagName, namespace ) => {
+const getChildElements = ( node, tagName ) => {
     if( !node ) return []
 
     let elements = []
 
     if( tagName in tagNames ){
         for( let tag of tagNames[tagName] ) {
-            elements.push( namespace
-                ? Array.from( node.getElementsByTagNameNS( namespace, tag ) )
-                : Array.from( node.getElementsByTagName( tag ) ) )
+            elements.push( Array.from( node.getElementsByTagName( tag ) ) )
         }
         //concat marche pas ??
         elements = elements.reduce( ( a, b ) => a.concat( b ) )
     } else {
-        elements = namespace
-            ? Array.from( node.getElementsByTagNameNS( namespace, tagName ) )
-            : Array.from( node.getElementsByTagName( tagName ) )
+        elements = Array.from( node.getElementsByTagName( tagName ) )
     }
 
     return elements.filter( element => element.parentNode.nodeName === node.nodeName )
 }
 
-const getElementTextContentArray = ( node, tagName, namespace ) => {
-    const nodes = getChildElements( node, tagName, namespace )
+const getElementTextContentArray = ( node, tagName ) => {
+    const nodes = getChildElements( node, tagName )
     return nodes.length === 0
         ? []
         : nodes.map( node => node.textContent )
 }
 
 
-const getElementTextContent = ( node, tagName, namespace ) => {
-    const array = getElementTextContentArray( node, tagName, namespace )
+const getElementTextContent = ( node, tagName ) => {
+    const array = getElementTextContentArray( node, tagName )
 
     return array[0] || undefined
 }
 
 const getLinks = node => {
-    const links = getChildElements( node, 'link' )
+    const links = Array.from( getChildElements( node, 'link' ) )
 
-    const linksWithoutEnclosures = links.filter( link => link.getAttribute( 'rel' ) !== 'enclosure' )
-
-    //TODO ne prend qu'une seule balise de liens. important ?
-    return {
-        url: linksWithoutEnclosures[0].getAttribute( 'href' ),
-        rel: linksWithoutEnclosures[0].getAttribute( 'rel' )
-    }
+    return links.map( link => link.textContent )
 }
 
 const getAuthors = node => {
     const authors = getChildElements( node, 'author' )
 
-    return authors.map( author => getElementTextContent( author, 'name' ) )
+    return authors.map( author => author.textContent )
 }
 
 const getItems = ( xml, feedType ) => {
@@ -110,7 +100,7 @@ const getItems = ( xml, feedType ) => {
             description: getElementTextContent( item, 'description' ),
             id: getElementTextContent( item, 'id' ),
             //imageUrl: getItemImage( item ),
-            content: getElementTextContent( item, 'content', 'http://purl.org/rss/1.0/modules/content/' ),
+            content: getElementTextContent( item, 'content' ),
             authors: getAuthors( item ),
             //categories: getItemCategories( item ),
             dates: {

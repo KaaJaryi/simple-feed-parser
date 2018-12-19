@@ -1,10 +1,7 @@
 const model = {
     type: undefined,
     title: undefined,
-    links: {
-        url: undefined,
-        rel: undefined
-    },
+    links: [],
     description: undefined,
     language: undefined,
     copyright: undefined,
@@ -21,10 +18,7 @@ const model = {
     },
     items: [{
         title: undefined,
-        links: {
-            url: undefined,
-            rel: undefined
-        },
+        links: [],
         id: undefined,
         imageUrl: undefined,
         description: undefined,
