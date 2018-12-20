@@ -3,13 +3,16 @@ import { parser } from './parser'
 export const parse = async string => {
     let xml
     let feedType
-    try {
-        xml = new DOMParser().parseFromString( string, 'text/xml' )
-        feedType = await identifyFeedType( xml )
-    } catch ( e ) {
-        return Promise.reject( 'No good feed' )
+    let parsed
+
+    xml = new DOMParser().parseFromString( string, 'text/xml' )
+    feedType = identifyFeedType( xml )
+    if( feedType.length ){
+        parsed = parser( xml, feedType )
+        return Promise.resolve( parsed )
     }
-    return parser( xml, feedType )
+    console.log( 'feed is no good' )
+    return Promise.reject( new Error( 'No good feed' ) )
 }
 
 const identifyFeedType = xml => {

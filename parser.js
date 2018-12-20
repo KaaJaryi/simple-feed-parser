@@ -12,7 +12,6 @@ export const parser = ( xml, feedType ) => {
     )
 
     parsed.items = getItems( xml, feedType )
-    console.log( parsed )
 
     return parsed
 }
@@ -25,21 +24,46 @@ const getMetadatas = ( xml, feedType ) => {
 
     const channelNode = xml.getElementsByTagName( channelTag )[0]
 
-    metadatas.title = getElementTextContent( channelNode, 'title' )
-    metadatas.links = getLinks( channelNode )
-    metadatas.description = getElementTextContent( channelNode, 'description' )
-    metadatas.language = getElementTextContent( channelNode, 'language' )
-    metadatas.copyright = getElementTextContent( channelNode, 'copyright' )
-    metadatas.authors = getAuthors( channelNode )
-    metadatas.lastUpdated = getElementTextContent( channelNode, 'updated' )
-    metadatas.lastPublished = getElementTextContent( channelNode, 'published' )
-    //metadatas.categories = getChannelCategories( channelNode )
+    metadatas.title = getOneTextContent( channelNode, 'title' )
+    metadatas.links = getTextContents( channelNode, 'link' )
+    metadatas.description = getOneTextContent( channelNode, 'description' )
+    metadatas.language = getOneTextContent( channelNode, 'language' )
+    metadatas.copyright = getOneTextContent( channelNode, 'copyright' )
+    metadatas.authors = getTextContents( channelNode, 'author' )
+    metadatas.lastUpdated = getOneTextContent( channelNode, 'updated' )
+    metadatas.lastPublished = getOneTextContent( channelNode, 'published' )
+    metadatas.categories = getTextContents( channelNode, 'category' )
     //metadatas.image = getChannelImage( channelNode )
 
     return metadatas
 }
 
-const getElements = ( node, tagName ) => node.getElementsByTagName( tagName ) || []
+const getItems = ( xml, feedType ) => {
+    let itemTag = ''
+    if( feedType === 'rss' ) itemTag = 'item'
+    else if( feedType === 'atom' ) itemTag = 'entry'
+
+    const itemNodes = Array.from( xml.getElementsByTagName( itemTag ) )
+
+    return itemNodes.map( item => {
+        return {
+            title: getOneTextContent( item, 'title' ),
+            links: getTextContents( item, 'link' ),
+            description: getOneTextContent( item, 'description' ),
+            id: getOneTextContent( item, 'id' ),
+            //imageUrl: getItemImage( item ),
+            content: getOneTextContent( item, 'content' ),
+            authors: getTextContents( item, 'author' ),
+            categories: getTextContents( item, 'category' ),
+            dates: {
+                published: getOneTextContent( item, 'published' ),
+                updated: getOneTextContent( item, 'updated' )
+            },
+            //enclosures: getItemEnclosures( item ),
+            //itunes: itunesParser.parseItem( item )
+        }
+    })
+}
 
 const getChildElements = ( node, tagName ) => {
     if( !node ) return []
@@ -59,56 +83,13 @@ const getChildElements = ( node, tagName ) => {
     return elements.filter( element => element.parentNode.nodeName === node.nodeName )
 }
 
-const getElementTextContentArray = ( node, tagName ) => {
-    const nodes = getChildElements( node, tagName )
-    return nodes.length === 0
-        ? []
-        : nodes.map( node => node.textContent )
+const getTextContents = ( node, tagName ) => {
+    const array = getChildElements( node, tagName )
+
+    return array.map( element => element.textContent )
 }
 
-
-const getElementTextContent = ( node, tagName ) => {
-    const array = getElementTextContentArray( node, tagName )
-
+const getOneTextContent = ( node, tagName ) => {
+    const array = getTextContents( node, tagName )
     return array[0] || undefined
-}
-
-const getLinks = node => {
-    const links = Array.from( getChildElements( node, 'link' ) )
-
-    return links.map( link => link.textContent )
-}
-
-const getAuthors = node => {
-    const authors = getChildElements( node, 'author' )
-
-    return authors.map( author => author.textContent )
-}
-
-const getItems = ( xml, feedType ) => {
-    let itemTag
-    if( feedType === 'rss' ) itemTag = 'item'
-    else if( feedType === 'atom' ) itemTag = 'entry'
-    else return []
-
-    const itemNodes = Array.from( getElements( xml, itemTag ) )
-
-    return itemNodes.map( item => {
-        return {
-            title: getElementTextContent( item, 'title' ),
-            links: getLinks( item ),
-            description: getElementTextContent( item, 'description' ),
-            id: getElementTextContent( item, 'id' ),
-            //imageUrl: getItemImage( item ),
-            content: getElementTextContent( item, 'content' ),
-            authors: getAuthors( item ),
-            //categories: getItemCategories( item ),
-            dates: {
-                published: getElementTextContent( item, 'published' ),
-                updated: getElementTextContent( item, 'updated' )
-            },
-            //enclosures: getItemEnclosures( item ),
-            //itunes: itunesParser.parseItem( item )
-        }
-    })
 }
