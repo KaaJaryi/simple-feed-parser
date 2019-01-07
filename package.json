@@ -1,6 +1,6 @@
 {
   "name": "simple-feed-parser",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A feed parser that return a clean an easy to use json for Fleetwood",
   "main": "index.js",
   "scripts": {

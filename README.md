@@ -1,11 +1,11 @@
-# feed-parser
+# simple-feed-parser
 
 Easy-to-use parser with a formatted response
 
 ## Usage
 
 ```js
-import { parse } from 'feed-parser'
+import { parse } from 'simple-feed-parser'
 
 fetch( someFeed )
     .then( res => response.text() )
