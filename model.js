@@ -29,11 +29,6 @@ const model = {
             published: undefined,
             updated: undefined
         },
-        enclosures: [{
-            url: undefined,
-            length: undefined,
-            mimeType: undefined
-        }],
     }]
 }
 

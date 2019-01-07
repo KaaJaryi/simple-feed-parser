@@ -1,6 +1,6 @@
 import { parser } from './parser'
 
-export const parse = async string => {
+export const parse = string => {
     let xml
     let feedType
     let parsed
@@ -9,10 +9,10 @@ export const parse = async string => {
     feedType = identifyFeedType( xml )
     if( feedType.length ){
         parsed = parser( xml, feedType )
-        return Promise.resolve( parsed )
+        return parsed
+    } else {
+        throw new Error( 'XML is no good' )
     }
-    console.log( 'feed is no good' )
-    return Promise.reject( new Error( 'No good feed' ) )
 }
 
 const identifyFeedType = xml => {

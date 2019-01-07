@@ -24,6 +24,7 @@ const getMetadatas = ( xml, feedType ) => {
 
     const channelNode = xml.getElementsByTagName( channelTag )[0]
 
+    metadatas.type = feedType
     metadatas.title = getOneTextContent( channelNode, 'title' )
     metadatas.links = getTextContents( channelNode, 'link' )
     metadatas.description = getOneTextContent( channelNode, 'description' )
@@ -59,8 +60,6 @@ const getItems = ( xml, feedType ) => {
                 published: getOneTextContent( item, 'published' ),
                 updated: getOneTextContent( item, 'updated' )
             },
-            //enclosures: getItemEnclosures( item ),
-            //itunes: itunesParser.parseItem( item )
         }
     })
 }
@@ -74,7 +73,6 @@ const getChildElements = ( node, tagName ) => {
         for( let tag of tagNames[tagName] ) {
             elements.push( Array.from( node.getElementsByTagName( tag ) ) )
         }
-        //concat marche pas ??
         elements = elements.reduce( ( a, b ) => a.concat( b ) )
     } else {
         elements = Array.from( node.getElementsByTagName( tagName ) )

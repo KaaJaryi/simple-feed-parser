@@ -21,7 +21,7 @@ const tagNames = {
         'content'
     ],
     copyright: [
-        'copyright:',
+        'copyright',
         'rights'
     ],
     published: [
