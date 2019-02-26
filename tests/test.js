@@ -2,7 +2,7 @@ import { parse } from '../index'
 import { edj } from './examples/edj'
 
 test( 'test xml of EDJ', async() => {
-    expect.assertions( 14 )
+    expect.assertions( 15 )
     const parsed = await parse( edj )
     expect( parsed.title ).toBe( 'Épris de justice | Chroniques judiciaires' )
     expect( parsed.description ).toBe( 'Chroniques de procès illustrées. Histoires criminelles. Justice ordinaire. En direct des prétoires de France.' )
@@ -18,4 +18,5 @@ test( 'test xml of EDJ', async() => {
     expect( parsed.items[1].authors ).toContain( 'Cosme Buxin' )
     expect( parsed.items[1].categories.length ).toBe( 4 )
     expect( parsed.items[1].categories ).toContain( 'groupement en vue de violences' )
+    expect( parsed.image.url ).toContain( 'https://www.epris-de-justice.info/favicon.png' )
 })

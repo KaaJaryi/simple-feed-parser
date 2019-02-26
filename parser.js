@@ -34,7 +34,7 @@ const getMetadatas = ( xml, feedType ) => {
     metadatas.lastUpdated = getOneTextContent( channelNode, 'updated' )
     metadatas.lastPublished = getOneTextContent( channelNode, 'published' )
     metadatas.categories = getTextContents( channelNode, 'category' )
-    //metadatas.image = getChannelImage( channelNode )
+    metadatas.image = getImage( channelNode )
 
     return metadatas
 }
@@ -90,4 +90,28 @@ const getTextContents = ( node, tagName ) => {
 const getOneTextContent = ( node, tagName ) => {
     const array = getTextContents( node, tagName )
     return array[0] || undefined
+}
+
+const getImage = node => {
+    const imageNodes = getChildElements( node, 'image' )
+
+    if( imageNodes.length === 0 ) {
+        return {
+            url: undefined,
+            title: undefined,
+            description: undefined,
+            width: undefined,
+            height: undefined
+        }
+    }
+
+    const imageNode = imageNodes[0]
+
+    return {
+        url: getTextContents( imageNode, 'url' ),
+        title: getTextContents( imageNode, 'title' ),
+        description: getTextContents( imageNode, 'description' ),
+        width: getTextContents( imageNode, 'width' ),
+        height: getTextContents( imageNode, 'height' ),
+    }
 }
